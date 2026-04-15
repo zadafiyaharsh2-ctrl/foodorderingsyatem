@@ -45,9 +45,10 @@ const RestaurantDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [restRes, ordRes] = await Promise.all([getMyRestaurant(), getRestaurantOrders()]);
+      const [restRes, ordRes, delRes] = await Promise.all([getMyRestaurant(), getRestaurantOrders(), getAvailableDeliveryBoys()]);
       if (restRes.data.success) { setRestaurant(restRes.data.restaurant); setMenuItems(restRes.data.menuItems || []); }
       if (ordRes.data.success) setOrders(ordRes.data.orders);
+      if (delRes.data.success) setDeliveryBoys(delRes.data.deliveryBoys);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -152,9 +153,10 @@ const RestaurantDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
           {[
             { id: 'orders', label: 'Order Management', icon: Package },
+            { id: 'delivery', label: 'Delivery Management', icon: Truck },
             { id: 'menu', label: 'Menu Items', icon: ChefHat }
           ].map(tab => {
             const Icon = tab.icon;
@@ -241,6 +243,103 @@ const RestaurantDashboard = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Delivery Management Tab */}
+        {activeTab === 'delivery' && (
+          <div>
+            <div className="grid gap-6">
+              {/* Available Delivery Boys */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
+                <h3 className="text-2xl font-black text-stone-900 mb-6">Available Delivery Boys</h3>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {deliveryBoys.length === 0 ? (
+                    <div className="col-span-full text-center py-12">
+                      <Truck size={40} className="text-stone-300 mx-auto mb-3" />
+                      <p className="text-stone-500 font-medium">No delivery boys available</p>
+                    </div>
+                  ) : (
+                    deliveryBoys.map(boy => (
+                      <div key={boy._id} className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 shadow-sm">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <p className="font-black text-stone-900 text-lg">{boy.name}</p>
+                            <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mt-1">Available</p>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"><span className="text-white text-sm">✓</span></div>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <p className="text-stone-700"><span className="font-bold">Phone:</span> {boy.phone}</p>
+                          <p className="text-stone-700"><span className="font-bold">Vehicle:</span> {boy.vehicleType}</p>
+                          <p className="text-stone-700"><span className="font-bold">Location:</span> {boy.address?.city}, {boy.address?.state}</p>
+                          {boy.rating && <p className="text-stone-700"><span className="font-bold">Rating:</span> {boy.rating.toFixed(1)} ⭐</p>}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Orders Ready for Delivery */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
+                <h3 className="text-2xl font-black text-stone-900 mb-6">Orders Ready for Delivery</h3>
+                <div className="space-y-4">
+                  {orders.filter(o => o.status === 'ready').length === 0 ? (
+                    <div className="text-center py-12">
+                      <Package size={40} className="text-stone-300 mx-auto mb-3" />
+                      <p className="text-stone-500 font-medium">No orders ready for delivery assignment</p>
+                    </div>
+                  ) : (
+                    orders.filter(o => o.status === 'ready').map(order => (
+                      <div key={order._id} className="flex items-center justify-between p-5 bg-stone-50 border border-stone-200 rounded-2xl hover:bg-stone-100 transition-colors">
+                        <div className="flex-1">
+                          <p className="font-bold text-stone-900">Order #{order._id.slice(-6)}</p>
+                          <p className="text-sm text-stone-500">{order.user?.name} • ₹{order.grandTotal}</p>
+                          <p className="text-xs text-stone-400 mt-1">{order.items?.length} items</p>
+                        </div>
+                        <button onClick={() => openAssignDelivery(order)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 whitespace-nowrap">
+                          <Truck size={16} /> Assign
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Orders Awaiting Pickup */}
+              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
+                <h3 className="text-2xl font-black text-stone-900 mb-6">Assigned Orders Awaiting Pickup</h3>
+                <div className="space-y-4">
+                  {orders.filter(o => o.status === 'assigned').length === 0 ? (
+                    <div className="text-center py-12">
+                      <Truck size={40} className="text-stone-300 mx-auto mb-3" />
+                      <p className="text-stone-500 font-medium">No assigned orders</p>
+                    </div>
+                  ) : (
+                    orders.filter(o => o.status === 'assigned').map(order => (
+                      <div key={order._id} className="p-5 bg-cyan-50 border border-cyan-200 rounded-2xl">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <p className="font-bold text-stone-900">Order #{order._id.slice(-6)}</p>
+                            <p className="text-sm text-stone-500">{order.user?.name}</p>
+                          </div>
+                          <span className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-lg text-xs font-bold">Assigned</span>
+                        </div>
+                        {order.deliveryBoy && (
+                          <div className="bg-white p-3 rounded-lg border border-cyan-100">
+                            <p className="text-xs font-bold text-cyan-700 mb-1">Delivery Boy</p>
+                            <p className="font-bold text-stone-900">{order.deliveryBoy.name}</p>
+                            <p className="text-xs text-stone-500">{order.deliveryBoy.phone}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
