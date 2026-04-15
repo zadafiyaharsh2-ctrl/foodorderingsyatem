@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inter: 'Inter', sans-serif;
+  
+  /* 
+    GLOBAL VIBRANCY OVERRIDES 
+    These replace Tailwind's default muted colors with extremely punchy, saturated versions anywhere they are used.
+  */
+  
+  /* NEON ORANGE - Replaces the default orange */
+  --color-orange-50: #fff4ed;
+  --color-orange-100: #ffe5d4;
+  --color-orange-200: #ffc299;
+  --color-orange-300: #ffa266;
+  --color-orange-400: #ff7a29;
+  --color-orange-500: #ff5500; /* Pure, eye-catching neon orange */
+  --color-orange-600: #e64000;
+  --color-orange-700: #cc3000;
+  --color-orange-800: #991f00;
+  --color-orange-900: #661000;
+
+  /* WARM & RICH STONE - Replaces the default greyish stone with warmer, clearer tones */
+  --color-stone-50: #fffcf9;   /* Exceptionally warm white for backgrounds */
+  --color-stone-100: #f5efe9;
+  --color-stone-200: #ebdcd0;
+  --color-stone-300: #dbbfa6;
+  --color-stone-400: #c29b7a;
+  --color-stone-500: #a37854;
+  --color-stone-600: #80583b;
+  --color-stone-700: #5c3c24;
+  --color-stone-800: #3d2514;
+  --color-stone-900: #1f1107;  /* Deep, rich espresso black */
+
+  /* VIBRANT SEMANTICS (Used in badges and alerts) */
+  --color-green-100: #dcfce7;
+  --color-green-500: #00e676; /* Neon green */
+  --color-green-600: #00c853; 
+  --color-green-700: #00a040;
+
+  --color-red-100: #ffebee;
+  --color-red-500: #ff1744;   /* Neon red */
+  --color-red-600: #d50000;
+  --color-red-700: #b71c1c;
+
+  --color-blue-100: #e3f2fd;
+  --color-blue-500: #2979ff;  /* Brilliant blue */
+  --color-blue-600: #2962ff;
+  --color-blue-700: #0d47a1;
+  
+  --color-yellow-100: #fff9c4;
+  --color-yellow-500: #ffea00; /* Bright yellow */
+
+  /* Keeping custom base tokens */
+  --color-primary: #ff5500;
+  --color-accent: #00e676;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #fdfaf6; /* Brighter, warmer background */
+    color: #0f172a; /* Darker, richer text for contrast */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #fff7ed;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #ff5500;
+    border-radius: 4px;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 85, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(255, 85, 0, 0.08); /* Vibrant glass shadow */
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #ff3300, #ff8c00); /* Extreme vibrant orange gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ff4500, #ff8c00);
+    color: white;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(255, 69, 0, 0.35); /* Rich orange shadow */
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(255, 69, 0, 0.55);
+    background: linear-gradient(135deg, #ff5500, #ff9900);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #ff5500;
+    padding: 12px 28px;
+    border: 2px solid #ff5500;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #fff2eb;
+    box-shadow: 0 4px 15px rgba(255, 85, 0, 0.15);
+  }
+
+  .input-field {
+    background: #ffffff;
+    border: 2px solid #f1f5f9;
+    color: #0f172a;
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+  }
+
+  .input-field:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 0 5px rgba(255, 140, 0, 0.15);
+    background: #fffcf8;
+  }
+
+  .input-field::placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid rgba(255, 85, 0, 0.05);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 85, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(255, 85, 0, 0.12); /* Vibrant card hover glow */
+  }
+}
+
+@layer utilities {
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 25px rgba(255, 85, 0, 0.2); }
+  50% { box-shadow: 0 0 50px rgba(255, 85, 0, 0.5); }
+}
