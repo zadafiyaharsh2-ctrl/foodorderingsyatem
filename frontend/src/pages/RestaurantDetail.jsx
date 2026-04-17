@@ -31,18 +31,18 @@ const RestaurantDetail = ({ cart, setCart }) => {
     setCart(prev => {
       if (prev.restaurantId && prev.restaurantId !== restaurant._id) {
         if (!confirm('Your cart has items from another restaurant. Clear cart and add this item?')) return prev;
-        return { restaurantId: restaurant._id, restaurantName: restaurant.name, items: [{ ...item, quantity: 1 }] };
+        return { restaurantId: restaurant._id, restaurantName: restaurant.name, deliveryFee: restaurant.deliveryFee || 0, items: [{ ...item, quantity: 1 }] };
       }
 
       const existing = prev.items?.find(i => i._id === item._id);
       if (existing) {
         return {
-          ...prev, restaurantId: restaurant._id, restaurantName: restaurant.name,
+          ...prev, restaurantId: restaurant._id, restaurantName: restaurant.name, deliveryFee: restaurant.deliveryFee || 0,
           items: prev.items.map(i => i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i)
         };
       }
       return {
-        ...prev, restaurantId: restaurant._id, restaurantName: restaurant.name,
+        ...prev, restaurantId: restaurant._id, restaurantName: restaurant.name, deliveryFee: restaurant.deliveryFee || 0,
         items: [...(prev.items || []), { ...item, quantity: 1 }]
       };
     });
@@ -129,14 +129,7 @@ const RestaurantDetail = ({ cart, setCart }) => {
                 <span className="text-stone-900 text-base">{restaurant.rating || '4.0'}</span>
                 <span className="text-stone-400 font-medium">({restaurant.totalRatings || '100+'})</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-600 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-100">
-                <Clock size={18} className="text-orange-500" />
-                <span>{restaurant.deliveryTime}</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-600 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-100">
-                <Info size={18} className="text-orange-500" />
-                <span>{restaurant.deliveryFee ? `₹${restaurant.deliveryFee} delivery` : 'Free delivery'}</span>
-              </div>
+
             </div>
 
             {/* Infrastructure Section */}
@@ -246,7 +239,7 @@ const RestaurantDetail = ({ cart, setCart }) => {
                 </div>
                 <div className="text-left">
                   <div className="text-orange-400 text-sm uppercase tracking-wider mb-1 mt-0.5">{cartCount} ITEM{cartCount > 1 ? 'S' : ''}</div>
-                  <div className="text-xl">₹{cartTotal} <span className="text-sm font-medium text-stone-400 line-through ml-2">₹{cartTotal + 50}</span></div>
+                  <div className="text-xl">₹{cartTotal}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-white text-stone-900 px-6 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition-colors">

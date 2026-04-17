@@ -33,11 +33,11 @@ const Cart = ({ cart, setCart }) => {
   };
 
   const clearCart = () => {
-    setCart({ restaurantId: null, restaurantName: '', items: [] });
+    setCart({ restaurantId: null, restaurantName: '', deliveryFee: 0, items: [] });
   };
 
   const subtotal = cart.items?.reduce((s, i) => s + i.price * i.quantity, 0) || 0;
-  const deliveryFee = subtotal > 0 ? 30 : 0;
+  const deliveryFee = subtotal > 0 ? (cart.deliveryFee || 0) : 0;
   const tax = Math.round(subtotal * 0.05 * 100) / 100;
   const total = subtotal + deliveryFee + tax;
 

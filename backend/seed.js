@@ -26,42 +26,42 @@ const seedData = async () => {
     // Create restaurant owners
     const restaurantOwners = [
       {
-        name: 'Mario Italian',
-        email: 'mario@pizza.com',
-        password: await bcrypt.hash('password123', 10),
-        phone: '+1-555-0101',
+        name: 'Delhi Pizza Palace',
+        email: 'delhipizzapalace@gmail.com',
+        password: await bcrypt.hash('000000', 10),
+        phone: '+91-555-0101',
         role: 'restaurant',
         address: {
           street: '123 Pizza Street',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001'
+          city: 'Delhi',
+          state: 'Delhi',
+          zipCode: '110001'
         }
       },
       {
-        name: 'Burger King',
-        email: 'king@burger.com',
-        password: await bcrypt.hash('password123', 10),
-        phone: '+1-555-0102',
+        name: 'Bombay Burger House',
+        email: 'bombayburgerhouse@gmail.com',
+        password: await bcrypt.hash('000000', 10),
+        phone: '+91-555-0102',
         role: 'restaurant',
         address: {
           street: '456 Burger Avenue',
-          city: 'Los Angeles',
-          state: 'CA',
-          zipCode: '90210'
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          zipCode: '400001'
         }
       },
       {
-        name: 'Tokyo Ramen',
-        email: 'tokyo@ramen.com',
-        password: await bcrypt.hash('password123', 10),
-        phone: '+1-555-0103',
+        name: 'Chennai Snack Shack',
+        email: 'chennaisnackshack@gmail.com',
+        password: await bcrypt.hash('000000', 10),
+        phone: '+91-555-0103',
         role: 'restaurant',
         address: {
-          street: '789 Noodle Lane',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94102'
+          street: '789 Snack Lane',
+          city: 'Chennai',
+          state: 'Tamil Nadu',
+          zipCode: '600001'
         }
       }
     ];
@@ -73,20 +73,20 @@ const seedData = async () => {
     const restaurants = [
       {
         owner: createdOwners[0]._id,
-        name: 'Mario\'s Authentic Pizza',
-        description: 'Traditional Italian pizza made with fresh ingredients and authentic recipes passed down through generations.',
-        cuisine: ['Italian', 'Pizza'],
-        image: '/images/pizza.png',
-        bannerImage: '/images/pizza.png',
+        name: 'Delhi Pizza Palace',
+        description: 'Authentic Indian-style pizzas with a fusion of traditional flavors and modern toppings. Made with fresh ingredients and love from Delhi.',
+        cuisine: ['Indian', 'Pizza'],
+        image: '/images/delhi-pizza-main.svg',
+        bannerImage: '/images/delhi-pizza-banner.svg',
         address: {
           street: '123 Pizza Street',
-          city: 'New York',
-          state: 'NY',
-          zipCode: '10001',
-          coordinates: { lat: 40.7128, lng: -74.0060 }
+          city: 'Delhi',
+          state: 'Delhi',
+          zipCode: '110001',
+          coordinates: { lat: 28.7041, lng: 77.1025 }
         },
-        phone: '+1-555-0101',
-        email: 'mario@pizza.com',
+        phone: '+91-555-0101',
+        email: 'delhipizzapalace@gmail.com',
         rating: 4.5,
         totalRatings: 128,
         deliveryTime: '25-35 min',
@@ -95,24 +95,24 @@ const seedData = async () => {
         isOpen: true,
         isVerified: true,
         openingHours: { open: '11:00', close: '23:00' },
-        tags: ['pizza', 'italian', 'authentic']
+        tags: ['pizza', 'indian', 'fusion']
       },
       {
         owner: createdOwners[1]._id,
-        name: 'Burger Palace',
-        description: 'Juicy, flame-grilled burgers made with premium beef and fresh toppings. The ultimate burger experience.',
-        cuisine: ['American', 'Burgers'],
-        image: '/images/burger.png',
-        bannerImage: '/images/burger.png',
+        name: 'Bombay Burger House',
+        description: 'Juicy burgers inspired by Mumbai street food culture, blending Indian spices with classic burger flavors.',
+        cuisine: ['Indian', 'Burgers'],
+        image: '/images/bombay-burger-main.svg',
+        bannerImage: '/images/bombay-burger-banner.svg',
         address: {
           street: '456 Burger Avenue',
-          city: 'Los Angeles',
-          state: 'CA',
-          zipCode: '90210',
-          coordinates: { lat: 34.0522, lng: -118.2437 }
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          zipCode: '400001',
+          coordinates: { lat: 19.0760, lng: 72.8777 }
         },
-        phone: '+1-555-0102',
-        email: 'king@burger.com',
+        phone: '+91-555-0102',
+        email: 'bombayburgerhouse@gmail.com',
         rating: 4.3,
         totalRatings: 95,
         deliveryTime: '20-30 min',
@@ -121,33 +121,33 @@ const seedData = async () => {
         isOpen: true,
         isVerified: true,
         openingHours: { open: '10:00', close: '22:00' },
-        tags: ['burger', 'american', 'fast-food']
+        tags: ['burger', 'indian', 'street-food']
       },
       {
         owner: createdOwners[2]._id,
-        name: 'Tokyo Noodle House',
-        description: 'Authentic Japanese ramen and Asian cuisine with rich, flavorful broths and fresh ingredients.',
-        cuisine: ['Japanese', 'Asian', 'Noodles'],
-        image: '/images/ramen.png',
-        bannerImage: '/images/ramen.png',
+        name: 'Chennai Snack Shack',
+        description: 'Delicious South Indian snacks and street food favorites, made fresh with authentic spices and traditional recipes.',
+        cuisine: ['Indian', 'Snacks', 'South Indian'],
+        image: '/images/chennai-snack-main.svg',
+        bannerImage: '/images/chennai-snack-banner.svg',
         address: {
-          street: '789 Noodle Lane',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94102',
-          coordinates: { lat: 37.7749, lng: -122.4194 }
+          street: '789 Snack Lane',
+          city: 'Chennai',
+          state: 'Tamil Nadu',
+          zipCode: '600001',
+          coordinates: { lat: 13.0827, lng: 80.2707 }
         },
-        phone: '+1-555-0103',
-        email: 'tokyo@ramen.com',
+        phone: '+91-555-0103',
+        email: 'chennaisnackshack@gmail.com',
         rating: 4.7,
         totalRatings: 156,
-        deliveryTime: '30-40 min',
-        deliveryFee: 3.49,
-        minOrder: 18,
+        deliveryTime: '15-25 min',
+        deliveryFee: 1.49,
+        minOrder: 10,
         isOpen: true,
         isVerified: true,
-        openingHours: { open: '12:00', close: '21:00' },
-        tags: ['ramen', 'japanese', 'asian', 'noodles']
+        openingHours: { open: '09:00', close: '21:00' },
+        tags: ['snacks', 'south-indian', 'street-food']
       }
     ];
 
@@ -161,136 +161,136 @@ const seedData = async () => {
 
     // Create menu items
     const menuItems = [
-      // Mario's Pizza
+      // Delhi Pizza Palace
       {
         restaurant: createdRestaurants[0]._id,
-        name: 'Margherita Pizza',
-        description: 'Fresh mozzarella, tomato sauce, basil, and olive oil on thin crust.',
+        name: 'Paneer Tikka Pizza',
+        description: 'Marinated paneer tikka with bell peppers, onions, and mint chutney on a thin crust.',
         price: 14.99,
-        image: '/images/pizza.png',
+        image: '/images/delhi-pizza-1.svg',
         category: 'Pizza',
         isVeg: true,
         isAvailable: true,
         preparationTime: '15-20 min',
         rating: 4.6,
         totalRatings: 45,
-        tags: ['vegetarian', 'classic']
+        tags: ['vegetarian', 'indian', 'paneer']
       },
       {
         restaurant: createdRestaurants[0]._id,
-        name: 'Pepperoni Pizza',
-        description: 'Spicy pepperoni, mozzarella, and tomato sauce on our signature crust.',
+        name: 'Chicken Tandoori Pizza',
+        description: 'Tandoori chicken, red onions, cilantro, and spicy sauce on our signature crust.',
         price: 16.99,
-        image: '/images/pizza.png',
+        image: '/images/delhi-pizza-2.svg',
         category: 'Pizza',
         isVeg: false,
         isAvailable: true,
         preparationTime: '15-20 min',
         rating: 4.4,
         totalRatings: 38,
-        tags: ['meat', 'spicy']
+        tags: ['chicken', 'spicy', 'tandoori']
       },
       {
         restaurant: createdRestaurants[0]._id,
-        name: 'Italian Salad',
-        description: 'Mixed greens, cherry tomatoes, olives, and balsamic vinaigrette.',
-        price: 8.99,
-        image: '/images/pizza.png',
-        category: 'Salads',
+        name: 'Veggie Delight Pizza',
+        description: 'Mixed vegetables, paneer, and Indian spices with a tangy tomato base.',
+        price: 13.99,
+        image: '/images/delhi-pizza-3.svg',
+        category: 'Pizza',
         isVeg: true,
         isAvailable: true,
-        preparationTime: '5-10 min',
-        rating: 4.2,
-        totalRatings: 22,
-        tags: ['vegetarian', 'healthy']
+        preparationTime: '15-20 min',
+        rating: 4.5,
+        totalRatings: 32,
+        tags: ['vegetarian', 'healthy', 'mixed-veggie']
       },
 
-      // Burger Palace
+      // Bombay Burger House
       {
         restaurant: createdRestaurants[1]._id,
-        name: 'Classic Cheeseburger',
-        description: 'Juicy beef patty with American cheese, lettuce, tomato, and special sauce.',
+        name: 'Masala Chicken Burger',
+        description: 'Spicy chicken patty with masala spices, lettuce, tomato, and mint mayo.',
         price: 12.99,
-        image: '/images/burger.png',
+        image: '/images/bombay-burger-1.svg',
         category: 'Burgers',
         isVeg: false,
         isAvailable: true,
         preparationTime: '10-15 min',
         rating: 4.5,
         totalRatings: 67,
-        tags: ['beef', 'cheese', 'classic']
+        tags: ['chicken', 'spicy', 'masala']
       },
       {
         restaurant: createdRestaurants[1]._id,
-        name: 'Bacon Deluxe Burger',
-        description: 'Double beef patty with crispy bacon, cheddar cheese, and BBQ sauce.',
-        price: 15.99,
-        image: '/images/burger.png',
+        name: 'Paneer Burger',
+        description: 'Grilled paneer patty with Indian spices, veggies, and tangy sauce.',
+        price: 11.99,
+        image: '/images/bombay-burger-2.svg',
         category: 'Burgers',
-        isVeg: false,
+        isVeg: true,
+        isAvailable: true,
+        preparationTime: '10-15 min',
+        rating: 4.3,
+        totalRatings: 52,
+        tags: ['vegetarian', 'paneer', 'grilled']
+      },
+      {
+        restaurant: createdRestaurants[1]._id,
+        name: 'Mumbai Vada Pav Burger',
+        description: 'Fusion of vada pav and burger with potato patty, chutneys, and spices.',
+        price: 10.99,
+        image: '/images/bombay-burger-3.svg',
+        category: 'Burgers',
+        isVeg: true,
         isAvailable: true,
         preparationTime: '12-18 min',
         rating: 4.7,
-        totalRatings: 52,
-        tags: ['beef', 'bacon', 'premium']
-      },
-      {
-        restaurant: createdRestaurants[1]._id,
-        name: 'French Fries',
-        description: 'Crispy golden fries seasoned with sea salt.',
-        price: 4.99,
-        image: '/images/burger.png',
-        category: 'Sides',
-        isVeg: true,
-        isAvailable: true,
-        preparationTime: '5-8 min',
-        rating: 4.3,
         totalRatings: 89,
-        tags: ['vegetarian', 'crispy']
+        tags: ['vegetarian', 'street-food', 'fusion']
       },
 
-      // Tokyo Noodle House
+      // Chennai Snack Shack
       {
         restaurant: createdRestaurants[2]._id,
-        name: 'Tonkotsu Ramen',
-        description: 'Rich pork bone broth with chashu pork, soft-boiled egg, and green onions.',
-        price: 13.99,
-        image: '/images/ramen.png',
-        category: 'Ramen',
-        isVeg: false,
-        isAvailable: true,
-        preparationTime: '20-25 min',
-        rating: 4.8,
-        totalRatings: 73,
-        tags: ['pork', 'rich', 'authentic']
-      },
-      {
-        restaurant: createdRestaurants[2]._id,
-        name: 'Vegetarian Ramen',
-        description: 'Miso broth with tofu, mushrooms, corn, and seasonal vegetables.',
-        price: 11.99,
-        image: '/images/ramen.png',
-        category: 'Ramen',
+        name: 'Samosa',
+        description: 'Crispy fried pastry filled with spiced potatoes, peas, and green chilies.',
+        price: 3.99,
+        image: '/images/chennai-snack-1.svg',
+        category: 'Snacks',
         isVeg: true,
         isAvailable: true,
-        preparationTime: '18-22 min',
-        rating: 4.5,
-        totalRatings: 41,
-        tags: ['vegetarian', 'healthy', 'miso']
+        preparationTime: '5-10 min',
+        rating: 4.8,
+        totalRatings: 73,
+        tags: ['vegetarian', 'crispy', 'spicy']
       },
       {
         restaurant: createdRestaurants[2]._id,
-        name: 'Gyoza Dumplings',
-        description: 'Pan-fried dumplings filled with pork and vegetables, served with dipping sauce.',
-        price: 7.99,
-        image: '/images/ramen.png',
-        category: 'Appetizers',
-        isVeg: false,
+        name: 'Pakora',
+        description: 'Assorted vegetable fritters dipped in chickpea batter and fried golden.',
+        price: 4.99,
+        image: '/images/chennai-snack-2.svg',
+        category: 'Snacks',
+        isVeg: true,
         isAvailable: true,
         preparationTime: '8-12 min',
+        rating: 4.5,
+        totalRatings: 41,
+        tags: ['vegetarian', 'fritters', 'golden']
+      },
+      {
+        restaurant: createdRestaurants[2]._id,
+        name: 'Murukku',
+        description: 'Crispy South Indian snack made from rice flour and urad dal, seasoned with sesame.',
+        price: 5.99,
+        image: '/images/chennai-snack-3.svg',
+        category: 'Snacks',
+        isVeg: true,
+        isAvailable: true,
+        preparationTime: '10-15 min',
         rating: 4.6,
         totalRatings: 58,
-        tags: ['dumplings', 'pork', 'appetizer']
+        tags: ['vegetarian', 'south-indian', 'crispy']
       }
     ];
 

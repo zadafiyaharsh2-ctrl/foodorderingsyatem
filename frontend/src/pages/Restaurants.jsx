@@ -122,16 +122,7 @@ const Restaurants = () => {
                   
                   <p className="text-stone-500 text-sm mb-4 line-clamp-1 font-medium">{restaurant.cuisine?.join(' • ') || 'Multi-cuisine'}</p>
 
-                  <div className="flex items-center gap-4 text-sm pt-4 border-t border-stone-100">
-                    <div className="flex items-center gap-1.5 text-stone-600 font-medium">
-                      <Clock size={16} className="text-orange-500" />
-                      <span>{restaurant.deliveryTime || '30-45 min'}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-stone-600 font-medium">
-                      <MapPin size={16} className="text-orange-500" />
-                      <span>{restaurant.deliveryFee ? `₹${restaurant.deliveryFee}` : 'Free'}</span>
-                    </div>
-                  </div>
+
                 </div>
               </Link>
             ))}

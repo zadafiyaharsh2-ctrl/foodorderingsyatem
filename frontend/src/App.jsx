@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 const AppContent = () => {
-  const [cart, setCart] = useState({ restaurantId: null, restaurantName: '', items: [] });
+  const [cart, setCart] = useState({ restaurantId: null, restaurantName: '', deliveryFee: 0, items: [] });
   const cartCount = cart.items?.reduce((s, i) => s + i.quantity, 0) || 0;
 
   return (
