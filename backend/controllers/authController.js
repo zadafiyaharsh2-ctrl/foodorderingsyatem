@@ -23,8 +23,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
       role: role || 'user',
-      phone: phone || '',
-      vehicleType: role === 'delivery' ? (vehicleType || 'bike') : ''
+      phone: phone || ''
     });
 
     await user.save();

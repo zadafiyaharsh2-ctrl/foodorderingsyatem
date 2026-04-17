@@ -8,10 +8,18 @@ exports.addMenuItem = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Restaurant not found' });
     }
 
+    const itemData = { ...req.body };
+    if (itemData.isVeg === 'true') itemData.isVeg = true;
+    if (itemData.isVeg === 'false') itemData.isVeg = false;
+
     const item = new MenuItem({
       restaurant: restaurant._id,
-      ...req.body
+      ...itemData
     });
+
+    if (req.file) {
+      item.image = `/uploads/${req.file.filename}`;
+    }
 
     await item.save();
     res.status(201).json({ success: true, menuItem: item });
@@ -33,12 +41,18 @@ exports.updateMenuItem = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Menu item not found' });
     }
 
-    const allowedUpdates = ['name', 'description', 'price', 'image', 'category', 'isVeg', 'isAvailable', 'preparationTime', 'tags'];
+    const allowedUpdates = ['name', 'description', 'price', 'category', 'isVeg', 'isAvailable', 'preparationTime', 'tags'];
     allowedUpdates.forEach(field => {
       if (req.body[field] !== undefined) {
-        item[field] = req.body[field];
+        if (req.body[field] === 'true') item[field] = true;
+        else if (req.body[field] === 'false') item[field] = false;
+        else item[field] = req.body[field];
       }
     });
+
+    if (req.file) {
+      item.image = `/uploads/${req.file.filename}`;
+    }
 
     await item.save();
     res.json({ success: true, menuItem: item });

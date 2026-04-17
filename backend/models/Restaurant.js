@@ -7,6 +7,7 @@ const restaurantSchema = new mongoose.Schema({
   cuisine: [{ type: String }],
   image: { type: String, default: '' },
   bannerImage: { type: String, default: '' },
+  infrastructureImages: [{ type: String }],
   address: {
     street: { type: String, default: '' },
     city: { type: String, default: '' },

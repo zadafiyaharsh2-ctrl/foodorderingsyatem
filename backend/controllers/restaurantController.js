@@ -54,13 +54,28 @@ exports.updateRestaurant = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Restaurant not found' });
     }
 
-    const allowedUpdates = ['name', 'description', 'cuisine', 'phone', 'address', 'deliveryTime', 'deliveryFee', 'minOrder', 'isOpen', 'openingHours', 'tags', 'image', 'bannerImage'];
+    const allowedUpdates = ['name', 'description', 'cuisine', 'phone', 'address', 'deliveryTime', 'deliveryFee', 'minOrder', 'isOpen', 'openingHours', 'tags'];
     
     allowedUpdates.forEach(field => {
       if (req.body[field] !== undefined) {
-        restaurant[field] = req.body[field];
+        if (req.body[field] === 'true') restaurant[field] = true;
+        else if (req.body[field] === 'false') restaurant[field] = false;
+        else restaurant[field] = req.body[field];
       }
     });
+
+    if (req.files) {
+      if (req.files['image']) {
+        restaurant.image = `/uploads/${req.files['image'][0].filename}`;
+      }
+      if (req.files['bannerImage']) {
+        restaurant.bannerImage = `/uploads/${req.files['bannerImage'][0].filename}`;
+      }
+      if (req.files['infrastructureImages']) {
+        const newImages = req.files['infrastructureImages'].map(file => `/uploads/${file.filename}`);
+        restaurant.infrastructureImages = [...(restaurant.infrastructureImages || []), ...newImages];
+      }
+    }
 
     await restaurant.save();
     res.json({ success: true, restaurant });

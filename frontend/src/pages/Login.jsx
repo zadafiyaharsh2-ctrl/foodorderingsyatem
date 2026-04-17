@@ -19,7 +19,7 @@ const Login = () => {
     try {
       const success = await login({ ...formData, role });
       if (success) {
-        navigate(role === 'restaurant' ? '/restaurant/dashboard' : role === 'delivery' ? '/delivery/dashboard' : '/dashboard');
+        navigate(role === 'restaurant' ? '/restaurant/dashboard' : '/dashboard');
       } else {
         setError('Invalid credentials');
       }
@@ -32,8 +32,7 @@ const Login = () => {
 
   const roles = [
     { id: 'user', label: 'Customer', icon: User },
-    { id: 'restaurant', label: 'Restaurant', icon: Store },
-    { id: 'delivery', label: 'Delivery', icon: Bike }
+    { id: 'restaurant', label: 'Restaurant', icon: Store }
   ];
 
   return (

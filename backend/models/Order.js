@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: true },
-  deliveryBoy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   items: [{
     menuItem: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
     name: { type: String, required: true },
@@ -17,7 +16,7 @@ const orderSchema = new mongoose.Schema({
   grandTotal: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['placed', 'confirmed', 'preparing', 'ready', 'assigned', 'picked_up', 'on_the_way', 'delivered', 'cancelled'],
+    enum: ['placed', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'],
     default: 'placed'
   },
   deliveryAddress: {

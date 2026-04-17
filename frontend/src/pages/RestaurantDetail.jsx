@@ -81,38 +81,77 @@ const RestaurantDetail = ({ cart, setCart }) => {
         </button>
 
         {/* Restaurant Header */}
-        <div className="bg-white rounded-3xl p-8 mb-10 shadow-sm border border-stone-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl -z-10 -mr-20 -mt-20 opacity-60" />
+        <div className="bg-white rounded-3xl mb-10 shadow-sm border border-stone-100 relative overflow-hidden group">
+          {/* Banner Image */}
+          <div className="h-64 overflow-hidden relative">
+            {restaurant.bannerImage ? (
+              <img 
+                src={restaurant.bannerImage} 
+                alt={restaurant.name} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-r from-orange-400 to-orange-600 opacity-20" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            
+            <div className="absolute bottom-6 left-8 flex items-center gap-6 z-10 w-full pr-16">
+              {/* Profile/Logo Image */}
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-white p-2 shadow-2xl shrink-0 overflow-hidden border-4 border-white">
+                {restaurant.image ? (
+                  <img 
+                    src={restaurant.image} 
+                    alt={restaurant.name} 
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-orange-100 flex items-center justify-center text-5xl rounded-2xl">
+                    🍽️
+                  </div>
+                )}
+              </div>
+              <div className="text-white">
+                <div className="flex flex-wrap items-center gap-4 mb-2">
+                  <h1 className="text-3xl sm:text-5xl font-black tracking-tight drop-shadow-md">{restaurant.name}</h1>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md ${restaurant.isOpen ? 'bg-green-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
+                    {restaurant.isOpen ? 'OPEN' : 'CLOSED'}
+                  </span>
+                </div>
+                <p className="text-orange-100/90 text-sm sm:text-lg font-medium drop-shadow-md line-clamp-1">{restaurant.description || restaurant.cuisine?.join(', ') || 'Premium Culinary Experience'}</p>
+              </div>
+            </div>
+          </div>
           
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-8 relative z-10">
-            <div className="w-32 h-32 rounded-3xl bg-orange-100 flex items-center justify-center text-6xl shrink-0 shadow-inner">
-              🍽️
-            </div>
-            <div className="flex-1">
-              <div className="flex flex-wrap justify-between items-start gap-4 mb-3">
-                <h1 className="text-4xl font-extrabold text-stone-900 tracking-tight">{restaurant.name}</h1>
-                <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${restaurant.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                  {restaurant.isOpen ? 'Open Now' : 'Closed'}
-                </span>
+          <div className="p-8 pt-10">
+            <div className="flex flex-wrap items-center gap-8 text-sm font-bold">
+              <div className="flex items-center gap-2 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-100">
+                <Star size={18} className="text-yellow-500" fill="currentColor" />
+                <span className="text-stone-900 text-base">{restaurant.rating || '4.0'}</span>
+                <span className="text-stone-400 font-medium">({restaurant.totalRatings || '100+'})</span>
               </div>
-              
-              <p className="text-stone-500 text-lg mb-6 font-medium">{restaurant.description || restaurant.cuisine?.join(', ') || 'Multi-cuisine restaurant'}</p>
-              
-              <div className="flex flex-wrap items-center gap-6 text-sm font-semibold">
-                <div className="flex items-center gap-2 bg-stone-50 px-3 py-2 rounded-xl border border-stone-100">
-                  <Star size={18} className="text-yellow-500" fill="currentColor" />
-                  <span className="text-stone-900 text-base">{restaurant.rating || '4.0'}</span>
-                </div>
-                <div className="flex items-center gap-2 text-stone-600">
-                  <Clock size={18} className="text-orange-500" />
-                  <span>{restaurant.deliveryTime}</span>
-                </div>
-                <div className="flex items-center gap-2 text-stone-600">
-                  <Info size={18} className="text-orange-500" />
-                  <span>{restaurant.deliveryFee ? `₹${restaurant.deliveryFee} delivery fee` : 'Free delivery'}</span>
-                </div>
+              <div className="flex items-center gap-2 text-stone-600 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-100">
+                <Clock size={18} className="text-orange-500" />
+                <span>{restaurant.deliveryTime}</span>
+              </div>
+              <div className="flex items-center gap-2 text-stone-600 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-100">
+                <Info size={18} className="text-orange-500" />
+                <span>{restaurant.deliveryFee ? `₹${restaurant.deliveryFee} delivery` : 'Free delivery'}</span>
               </div>
             </div>
+
+            {/* Infrastructure Section */}
+            {restaurant.infrastructureImages?.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-stone-100">
+                <h3 className="text-sm font-bold text-stone-400 uppercase tracking-widest mb-4">Restaurant Infrastructure</h3>
+                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                  {restaurant.infrastructureImages.map((img, i) => (
+                    <div key={i} className="w-48 h-32 shrink-0 rounded-2xl overflow-hidden border border-stone-100 shadow-sm">
+                      <img src={img} alt={`Infrastructure ${i}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500 cursor-zoom-in" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -133,39 +172,59 @@ const RestaurantDetail = ({ cart, setCart }) => {
               
               <div className="grid gap-4">
                 {menuItems.filter(i => i.category === cat).map(item => (
-                  <div key={item._id} className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-stone-100 flex items-center gap-6 transition-all group">
+                  <div key={item._id} className="bg-white p-5 rounded-3xl shadow-sm hover:shadow-md border border-stone-100 flex items-center gap-6 transition-all group">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         {item.isVeg
-                          ? <span className="w-5 h-5 rounded border-[2px] border-green-600 flex items-center justify-center shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-green-600" /></span>
-                          : <span className="w-5 h-5 rounded border-[2px] border-red-600 flex items-center justify-center shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-red-600" /></span>
+                          ? <span className="w-4 h-4 rounded border border-green-600 flex items-center justify-center shrink-0"><span className="w-2 h-2 rounded-full bg-green-600" /></span>
+                          : <span className="w-4 h-4 rounded border border-red-600 flex items-center justify-center shrink-0"><span className="w-2 h-2 rounded-full bg-red-600" /></span>
                         }
-                        <h4 className="font-bold text-stone-900 text-lg">{item.name}</h4>
+                        <h4 className="font-bold text-stone-900 text-lg group-hover:text-orange-600 transition-colors uppercase tracking-tight">{item.name}</h4>
                       </div>
-                      <p className="text-stone-500 text-sm mb-4 line-clamp-2 leading-relaxed max-w-xl">{item.description}</p>
-                      <span className="text-xl font-bold text-stone-900">₹{item.price}</span>
+                      <p className="text-stone-500 text-sm mb-4 line-clamp-2 leading-relaxed max-w-lg">{item.description}</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-xl font-black text-stone-900">₹{item.price}</span>
+                        {item.tags?.slice(0, 2).map(tag => (
+                          <span key={tag} className="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full font-bold uppercase">{tag}</span>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Add to cart Controls */}
-                    <div className="shrink-0">
-                      {getItemQuantity(item._id) === 0 ? (
-                        <button onClick={() => addToCart(item)}
-                          className="px-8 py-3 rounded-xl font-bold bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white transition-all shadow-sm border border-orange-200 hover:border-orange-600">
-                          ADD
-                        </button>
+                    {/* Item Image */}
+                    <div className="w-32 h-32 rounded-2xl overflow-hidden shrink-0 relative shadow-sm">
+                      {item.image ? (
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
                       ) : (
-                        <div className="flex items-center gap-4 bg-white border border-stone-200 p-1.5 rounded-xl shadow-sm">
-                          <button onClick={() => removeFromCart(item._id)}
-                            className="w-10 h-10 rounded-lg bg-stone-50 text-stone-600 hover:bg-stone-200 hover:text-stone-900 transition-colors flex items-center justify-center font-bold">
-                            <Minus size={18} />
-                          </button>
-                          <span className="text-lg font-bold text-stone-900 w-4 text-center">{getItemQuantity(item._id)}</span>
-                          <button onClick={() => addToCart(item)}
-                            className="w-10 h-10 rounded-lg bg-orange-600 text-white hover:bg-orange-700 transition-colors flex items-center justify-center font-bold shadow-sm shadow-orange-600/30">
-                            <Plus size={18} />
-                          </button>
+                        <div className="w-full h-full bg-stone-100 flex items-center justify-center text-4xl">
+                          🍲
                         </div>
                       )}
+                      
+                      {/* Add button overlayed on image for premium look */}
+                      <div className="absolute -bottom-2 inset-x-0 flex justify-center">
+                        {getItemQuantity(item._id) === 0 ? (
+                          <button onClick={() => addToCart(item)}
+                            className="px-6 py-2 rounded-xl font-black bg-white text-green-600 hover:bg-green-600 hover:text-white transition-all shadow-lg border border-stone-100 text-sm">
+                            ADD
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2 bg-orange-600 text-white p-1 rounded-xl shadow-lg border border-orange-500">
+                            <button onClick={() => removeFromCart(item._id)}
+                              className="w-7 h-7 rounded-lg hover:bg-black/10 transition-colors flex items-center justify-center">
+                              <Minus size={14} fill="currentColor" strokeWidth={3} />
+                            </button>
+                            <span className="text-sm font-black w-4 text-center">{getItemQuantity(item._id)}</span>
+                            <button onClick={() => addToCart(item)}
+                              className="w-7 h-7 rounded-lg hover:bg-black/10 transition-colors flex items-center justify-center">
+                              <Plus size={14} fill="currentColor" strokeWidth={3} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

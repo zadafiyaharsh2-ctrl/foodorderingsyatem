@@ -30,11 +30,10 @@ const Register = () => {
     try {
       const data = { ...formData, role };
       if (role !== 'restaurant') delete data.restaurantName;
-      if (role !== 'delivery') delete data.vehicleType;
       
       const success = await register(data);
       if (success) {
-        navigate(role === 'restaurant' ? '/restaurant/dashboard' : role === 'delivery' ? '/delivery/dashboard' : '/dashboard');
+        navigate(role === 'restaurant' ? '/restaurant/dashboard' : '/dashboard');
       } else {
         setError('Registration failed');
       }
@@ -47,8 +46,7 @@ const Register = () => {
 
   const roles = [
     { id: 'user', label: 'Customer', icon: User },
-    { id: 'restaurant', label: 'Restaurant', icon: Store },
-    { id: 'delivery', label: 'Delivery', icon: Bike }
+    { id: 'restaurant', label: 'Restaurant', icon: Store }
   ];
 
   return (
@@ -103,20 +101,6 @@ const Register = () => {
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400"><Store size={18} /></div>
                   <input type="text" required value={formData.restaurantName} onChange={e => setFormData({...formData, restaurantName: e.target.value})} className="block w-full pl-11 pr-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium" placeholder="Your Restaurant Name" />
-                </div>
-              </div>
-            )}
-
-            {role === 'delivery' && (
-              <div>
-                <label className="block text-sm font-bold text-stone-700 mb-2">Vehicle Type</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400"><Truck size={18} /></div>
-                  <select value={formData.vehicleType} onChange={e => setFormData({...formData, vehicleType: e.target.value})} className="block w-full pl-11 pr-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium appearance-none">
-                    <option value="bike">Bike / Motorcycle</option>
-                    <option value="scooter">Scooter</option>
-                    <option value="car">Car</option>
-                  </select>
                 </div>
               </div>
             )}

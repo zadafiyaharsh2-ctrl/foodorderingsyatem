@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getMyRestaurant, addMenuItem, updateMenuItem, deleteMenuItem, getRestaurantOrders, updateOrderStatus, getAvailableDeliveryBoys, assignDeliveryBoy } from '../services/api';
-import { Plus, Trash2, Edit3, Package, DollarSign, Clock, ChefHat, X, Check, Eye, Truck } from 'lucide-react';
+import { getMyRestaurant, addMenuItem, updateMenuItem, deleteMenuItem, getRestaurantOrders, updateOrderStatus, updateRestaurant } from '../services/api';
+import { useSocket } from '../context/SocketContext';
+import { Plus, Trash2, Edit3, Package, DollarSign, Clock, ChefHat, X, Check, Eye, Image as ImageIcon, Settings } from 'lucide-react';
 
 const statusFlow = ['placed', 'confirmed', 'preparing', 'ready'];
 const statusLabels = { 
   placed: 'Placed', 
   confirmed: 'Confirmed', 
   preparing: 'Preparing', 
-  ready: 'Ready for Delivery', 
-  assigned: 'Delivery Assigned', 
-  picked_up: 'Picked Up', 
-  on_the_way: 'On the Way', 
+  ready: 'Ready', 
   delivered: 'Delivered', 
   cancelled: 'Cancelled' 
 };
@@ -20,35 +18,52 @@ const statusColors = {
   confirmed: 'bg-blue-100 text-blue-700', 
   preparing: 'bg-purple-100 text-purple-700', 
   ready: 'bg-emerald-100 text-emerald-700', 
-  assigned: 'bg-cyan-100 text-cyan-700',
-  picked_up: 'bg-cyan-100 text-cyan-700', 
-  on_the_way: 'bg-yellow-100 text-yellow-700', 
   delivered: 'bg-green-100 text-green-700', 
   cancelled: 'bg-red-100 text-red-700' 
 };
 
 const RestaurantDashboard = () => {
   const { user } = useAuth();
+  const socket = useSocket();
   const [restaurant, setRestaurant] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [deliveryBoys, setDeliveryBoys] = useState([]);
   const [activeTab, setActiveTab] = useState('orders');
   const [loading, setLoading] = useState(true);
   const [showAddMenu, setShowAddMenu] = useState(false);
-  const [showAssignDelivery, setShowAssignDelivery] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [menuForm, setMenuForm] = useState({ name: '', description: '', price: '', category: '', isVeg: false });
+  const [menuForm, setMenuForm] = useState({ name: '', description: '', price: '', category: '', isVeg: false, image: null });
   const [editingId, setEditingId] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ image: null, bannerImage: null, infrastructureImages: [] });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+    
+    if (socket) {
+      socket.on('new_order', (data) => {
+        console.log('New order received!', data);
+        // We could play a sound here: new Audio('/notification.mp3').play();
+        fetchData();
+      });
+
+      socket.on('order_cancelled', (data) => {
+        console.log('Order was cancelled:', data);
+        fetchData();
+      });
+
+      return () => {
+        socket.off('new_order');
+        socket.off('order_cancelled');
+      };
+    }
+  }, [socket]);
 
   const fetchData = async () => {
     try {
-      const [restRes, ordRes, delRes] = await Promise.all([getMyRestaurant(), getRestaurantOrders(), getAvailableDeliveryBoys()]);
+      const [restRes, ordRes] = await Promise.all([getMyRestaurant(), getRestaurantOrders()]);
       if (restRes.data.success) { setRestaurant(restRes.data.restaurant); setMenuItems(restRes.data.menuItems || []); }
       if (ordRes.data.success) setOrders(ordRes.data.orders);
-      if (delRes.data.success) setDeliveryBoys(delRes.data.deliveryBoys);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -56,15 +71,44 @@ const RestaurantDashboard = () => {
   const handleAddMenu = async (e) => {
     e.preventDefault();
     try {
-      if (editingId) {
-        await updateMenuItem(editingId, { ...menuForm, price: Number(menuForm.price) });
-      } else {
-        await addMenuItem({ ...menuForm, price: Number(menuForm.price) });
+      const formData = new FormData();
+      formData.append('name', menuForm.name);
+      formData.append('description', menuForm.description);
+      formData.append('price', menuForm.price);
+      formData.append('category', menuForm.category);
+      formData.append('isVeg', menuForm.isVeg);
+      if (menuForm.image) {
+        formData.append('image', menuForm.image);
       }
-      setMenuForm({ name: '', description: '', price: '', category: '', isVeg: false });
+
+      if (editingId) {
+        await updateMenuItem(editingId, formData);
+      } else {
+        await addMenuItem(formData);
+      }
+      setMenuForm({ name: '', description: '', price: '', category: '', isVeg: false, image: null });
       setShowAddMenu(false); setEditingId(null);
       fetchData();
     } catch (err) { alert('Failed to save menu item'); }
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      if (profileForm.image) formData.append('image', profileForm.image);
+      if (profileForm.bannerImage) formData.append('bannerImage', profileForm.bannerImage);
+      if (profileForm.infrastructureImages?.length) {
+        profileForm.infrastructureImages.forEach(img => formData.append('infrastructureImages', img));
+      }
+      
+      const res = await updateRestaurant(formData);
+      if (res.data.success) {
+        setRestaurant(res.data.restaurant);
+        setShowProfile(false);
+        setProfileForm({ image: null, bannerImage: null });
+      }
+    } catch (err) { alert('Failed to update profile'); }
   };
 
   const handleDelete = async (id) => {
@@ -76,31 +120,8 @@ const RestaurantDashboard = () => {
     try { await updateOrderStatus(orderId, newStatus); fetchData(); } catch (err) { alert('Failed'); }
   };
 
-  const handleAssignDelivery = async (orderId, deliveryBoyId) => {
-    try {
-      await assignDeliveryBoy(orderId, deliveryBoyId);
-      setShowAssignDelivery(false);
-      setSelectedOrder(null);
-      fetchData();
-    } catch (err) {
-      alert('Failed to assign delivery boy');
-    }
-  };
-
-  const openAssignDelivery = async (order) => {
-    setSelectedOrder(order);
-    try {
-      const res = await getAvailableDeliveryBoys();
-      if (res.data.success) {
-        setDeliveryBoys(res.data.deliveryBoys);
-        setShowAssignDelivery(true);
-      }
-    } catch (err) {
-      alert('Failed to load delivery boys');
-    }
-  };
-
   const getNextStatus = (current) => {
+    const statusFlow = ['placed', 'confirmed', 'preparing', 'ready', 'delivered'];
     const idx = statusFlow.indexOf(current);
     return idx >= 0 && idx < statusFlow.length - 1 ? statusFlow[idx + 1] : null;
   };
@@ -123,6 +144,9 @@ const RestaurantDashboard = () => {
             <p className="text-stone-500 text-lg font-medium">Manage your restaurant, menu, and incoming orders.</p>
           </div>
           <div className="flex gap-4 relative z-10">
+            <button onClick={() => setShowProfile(true)} className="bg-stone-100 hover:bg-stone-200 text-stone-700 px-5 py-3 rounded-2xl font-bold flex items-center gap-2 transition-colors border border-stone-200">
+              <Settings size={18} /> Update Images
+            </button>
             <div className="bg-stone-50 px-6 py-3 rounded-2xl border border-stone-100 text-center shadow-sm">
               <p className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-1">Status</p>
               <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${restaurant?.isOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -131,6 +155,54 @@ const RestaurantDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Profile Modal */}
+        {showProfile && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl relative animate-fade-in-up border border-stone-100">
+              <button onClick={() => setShowProfile(false)} className="absolute top-6 right-6 w-10 h-10 bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-900 rounded-full flex items-center justify-center transition-colors">
+                <X size={20} />
+              </button>
+              <h3 className="text-2xl font-black text-stone-900 mb-6">Store Images</h3>
+              <form onSubmit={handleUpdateProfile} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-bold text-stone-700 mb-2">Store Profile Image (Logo/Building)</label>
+                  <div className="flex items-center gap-4 mb-3">
+                    {restaurant?.image && (
+                      <img src={restaurant.image} alt="Profile" className="w-16 h-16 rounded-xl object-cover border border-stone-200" />
+                    )}
+                    <input type="file" accept="image/*" onChange={e => setProfileForm({...profileForm, image: e.target.files[0]})} className="flex-1 bg-stone-50 border border-stone-200 px-4 py-3 rounded-xl focus:outline-none focus:border-orange-500 text-sm" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-stone-700 mb-2">Banner Image (Wide Cover)</label>
+                  <div className="flex items-center gap-4 mb-3">
+                    {restaurant?.bannerImage && (
+                      <img src={restaurant.bannerImage} alt="Banner" className="w-24 h-12 rounded-lg object-cover border border-stone-200" />
+                    )}
+                    <input type="file" accept="image/*" onChange={e => setProfileForm({...profileForm, bannerImage: e.target.files[0]})} className="flex-1 bg-stone-50 border border-stone-200 px-4 py-3 rounded-xl focus:outline-none focus:border-orange-500 text-sm" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-stone-700 mb-2">Infrastructure Photos (Interior/Exterior)</label>
+                  <div className="space-y-3">
+                    <input type="file" multiple accept="image/*" onChange={e => setProfileForm({...profileForm, infrastructureImages: Array.from(e.target.files)})} className="w-full bg-stone-50 border border-stone-200 px-4 py-3 rounded-xl focus:outline-none focus:border-orange-500 text-sm" />
+                    {restaurant?.infrastructureImages?.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2">
+                        {restaurant.infrastructureImages.map((img, idx) => (
+                          <img key={idx} src={img} alt={`Infra ${idx}`} className="w-full h-12 object-cover rounded-lg border border-stone-200" />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button type="submit" className="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-4 rounded-xl mt-6">
+                  Save All Images
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
@@ -156,7 +228,6 @@ const RestaurantDashboard = () => {
         <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
           {[
             { id: 'orders', label: 'Order Management', icon: Package },
-            { id: 'delivery', label: 'Delivery Management', icon: Truck },
             { id: 'menu', label: 'Menu Items', icon: ChefHat }
           ].map(tab => {
             const Icon = tab.icon;
@@ -213,17 +284,11 @@ const RestaurantDashboard = () => {
                 <div className="md:w-64 shrink-0 flex flex-col justify-between">
                   <div className="mb-6">
                     <p className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-1">Order Value</p>
-                    <p className="text-4xl font-black text-stone-900 tracking-tight">₹{order.grandTotal}</p>
+                    <p className="text-4xl font-black text-stone-900 tracking-tight">₹{order.grandTotal.toFixed(2)}</p>
                     {order.notes && <p className="text-sm text-orange-600 bg-orange-50 p-2 rounded-lg mt-3 border border-orange-100"><span className="font-bold">Note:</span> {order.notes}</p>}
                   </div>
-                  
                   <div>
-                    {order.status === 'ready' ? (
-                      <button onClick={() => openAssignDelivery(order)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                        <Truck size={20} /> Assign Delivery Boy
-                      </button>
-                    ) : getNextStatus(order.status) ? (
+                    {getNextStatus(order.status) ? (
                       <button onClick={() => handleStatusUpdate(order._id, getNextStatus(order.status))}
                         className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-600/20 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
                         Mark as {statusLabels[getNextStatus(order.status)]} <Check size={20} />
@@ -233,113 +298,10 @@ const RestaurantDashboard = () => {
                         No further actions
                       </div>
                     )}
-                    {order.deliveryBoy && (
-                      <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                        <p className="text-sm font-bold text-blue-700">Delivery Boy</p>
-                        <p className="text-sm text-blue-600">{order.deliveryBoy.name}</p>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Delivery Management Tab */}
-        {activeTab === 'delivery' && (
-          <div>
-            <div className="grid gap-6">
-              {/* Available Delivery Boys */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
-                <h3 className="text-2xl font-black text-stone-900 mb-6">Available Delivery Boys</h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {deliveryBoys.length === 0 ? (
-                    <div className="col-span-full text-center py-12">
-                      <Truck size={40} className="text-stone-300 mx-auto mb-3" />
-                      <p className="text-stone-500 font-medium">No delivery boys available</p>
-                    </div>
-                  ) : (
-                    deliveryBoys.map(boy => (
-                      <div key={boy._id} className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 shadow-sm">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <p className="font-black text-stone-900 text-lg">{boy.name}</p>
-                            <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mt-1">Available</p>
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"><span className="text-white text-sm">✓</span></div>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <p className="text-stone-700"><span className="font-bold">Phone:</span> {boy.phone}</p>
-                          <p className="text-stone-700"><span className="font-bold">Vehicle:</span> {boy.vehicleType}</p>
-                          <p className="text-stone-700"><span className="font-bold">Location:</span> {boy.address?.city}, {boy.address?.state}</p>
-                          {boy.rating && <p className="text-stone-700"><span className="font-bold">Rating:</span> {boy.rating.toFixed(1)} ⭐</p>}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Orders Ready for Delivery */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
-                <h3 className="text-2xl font-black text-stone-900 mb-6">Orders Ready for Delivery</h3>
-                <div className="space-y-4">
-                  {orders.filter(o => o.status === 'ready').length === 0 ? (
-                    <div className="text-center py-12">
-                      <Package size={40} className="text-stone-300 mx-auto mb-3" />
-                      <p className="text-stone-500 font-medium">No orders ready for delivery assignment</p>
-                    </div>
-                  ) : (
-                    orders.filter(o => o.status === 'ready').map(order => (
-                      <div key={order._id} className="flex items-center justify-between p-5 bg-stone-50 border border-stone-200 rounded-2xl hover:bg-stone-100 transition-colors">
-                        <div className="flex-1">
-                          <p className="font-bold text-stone-900">Order #{order._id.slice(-6)}</p>
-                          <p className="text-sm text-stone-500">{order.user?.name} • ₹{order.grandTotal}</p>
-                          <p className="text-xs text-stone-400 mt-1">{order.items?.length} items</p>
-                        </div>
-                        <button onClick={() => openAssignDelivery(order)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 whitespace-nowrap">
-                          <Truck size={16} /> Assign
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Orders Awaiting Pickup */}
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
-                <h3 className="text-2xl font-black text-stone-900 mb-6">Assigned Orders Awaiting Pickup</h3>
-                <div className="space-y-4">
-                  {orders.filter(o => o.status === 'assigned').length === 0 ? (
-                    <div className="text-center py-12">
-                      <Truck size={40} className="text-stone-300 mx-auto mb-3" />
-                      <p className="text-stone-500 font-medium">No assigned orders</p>
-                    </div>
-                  ) : (
-                    orders.filter(o => o.status === 'assigned').map(order => (
-                      <div key={order._id} className="p-5 bg-cyan-50 border border-cyan-200 rounded-2xl">
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <p className="font-bold text-stone-900">Order #{order._id.slice(-6)}</p>
-                            <p className="text-sm text-stone-500">{order.user?.name}</p>
-                          </div>
-                          <span className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-lg text-xs font-bold">Assigned</span>
-                        </div>
-                        {order.deliveryBoy && (
-                          <div className="bg-white p-3 rounded-lg border border-cyan-100">
-                            <p className="text-xs font-bold text-cyan-700 mb-1">Delivery Boy</p>
-                            <p className="font-bold text-stone-900">{order.deliveryBoy.name}</p>
-                            <p className="text-xs text-stone-500">{order.deliveryBoy.phone}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -390,6 +352,22 @@ const RestaurantDashboard = () => {
                       <span className="font-bold text-stone-700">Vegetarian Item</span>
                     </label>
 
+                    <div>
+                      <label className="block text-sm font-bold text-stone-700 mb-2 mt-4">Menu Item Image</label>
+                      <div className="flex items-center gap-4">
+                        {menuForm.image && (
+                          <div className="w-16 h-16 rounded-xl overflow-hidden border border-stone-200 shrink-0">
+                            <img 
+                              src={menuForm.image instanceof File ? URL.createObjectURL(menuForm.image) : menuForm.image} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                        )}
+                        <input type="file" accept="image/*" onChange={e => setMenuForm({...menuForm, image: e.target.files[0]})} className="flex-1 bg-stone-50 border border-stone-200 px-4 py-3 rounded-xl text-stone-900 focus:outline-none focus:border-orange-500 font-medium text-sm" />
+                      </div>
+                    </div>
+
                     <button type="submit" className="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-4 rounded-xl shadow-xl shadow-stone-900/20 transition-all mt-6 text-lg hover:-translate-y-0.5">
                       {editingId ? 'Update Item' : 'Add to Menu'}
                     </button>
@@ -398,62 +376,43 @@ const RestaurantDashboard = () => {
               </div>
             )}
 
-            {/* Assign Delivery Modal */}
-            {showAssignDelivery && selectedOrder && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm px-4">
-                <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl relative animate-fade-in-up border border-stone-100">
-                  <button type="button" onClick={() => { setShowAssignDelivery(false); setSelectedOrder(null); }} className="absolute top-6 right-6 w-10 h-10 bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-900 rounded-full flex items-center justify-center transition-colors">
-                    <X size={20} />
-                  </button>
-                  <h3 className="text-2xl font-black text-stone-900 mb-6">Assign Delivery Boy</h3>
-                  <p className="text-stone-600 mb-6">Order #{selectedOrder._id.slice(-6)} - {selectedOrder.user?.name}</p>
-                  
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {deliveryBoys.length === 0 ? (
-                      <p className="text-stone-500 text-center py-8">No available delivery boys</p>
-                    ) : deliveryBoys.map(boy => (
-                      <div key={boy._id} className="flex items-center justify-between p-4 bg-stone-50 border border-stone-200 rounded-xl hover:bg-stone-100 transition-colors">
-                        <div>
-                          <p className="font-bold text-stone-900">{boy.name}</p>
-                          <p className="text-sm text-stone-500">{boy.phone} • {boy.vehicleType}</p>
-                          <p className="text-sm text-stone-500">{boy.address?.city}, {boy.address?.state}</p>
-                        </div>
-                        <button onClick={() => handleAssignDelivery(selectedOrder._id, boy._id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold transition-colors">
-                          Assign
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Menu Items Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {menuItems.map(item => (
-                <div key={item._id} className="bg-white rounded-3xl p-6 shadow-sm border border-stone-100 hover:shadow-md transition-shadow group">
-                  <div className="flex items-start justify-between mb-3 gap-4">
-                    <div className="flex items-center gap-3">
-                      {item.isVeg ? <div className="mt-1 shrink-0 w-5 h-5 rounded border-2 border-green-600 flex items-center justify-center"><div className="w-2.5 h-2.5 rounded-full bg-green-600" /></div>
-                        : <div className="mt-1 shrink-0 w-5 h-5 rounded border-2 border-red-600 flex items-center justify-center"><div className="w-2.5 h-2.5 rounded-full bg-red-600" /></div>}
-                      <h4 className="font-bold text-stone-900 text-lg leading-tight">{item.name}</h4>
+                <div key={item._id} className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-stone-100 hover:shadow-xl transition-all group flex flex-col">
+                  {/* Item Image */}
+                  <div className="h-48 overflow-hidden relative">
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    ) : (
+                      <div className="w-full h-full bg-orange-50 flex items-center justify-center text-5xl">🍲</div>
+                    )}
+                    <div className="absolute top-4 left-4">
+                      {item.isVeg ? <div className="w-6 h-6 rounded bg-white shadow-sm flex items-center justify-center border border-green-200"><div className="w-3 h-3 rounded-full bg-green-600" /></div>
+                        : <div className="w-6 h-6 rounded bg-white shadow-sm flex items-center justify-center border border-red-200"><div className="w-3 h-3 rounded-full bg-red-600" /></div>}
                     </div>
-                    <span className="bg-orange-50 text-orange-700 px-3 py-1 rounded-lg font-black shrink-0">₹{item.price}</span>
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-stone-900 font-black shadow-sm">
+                      ₹{item.price}
+                    </div>
                   </div>
-                  <p className="text-sm font-medium text-stone-500 mb-4 line-clamp-2 min-h-10">{item.description}</p>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-stone-100 mt-auto">
-                    <span className="text-xs font-bold uppercase tracking-wider text-stone-400 bg-stone-50 px-2.5 py-1 rounded-md">{item.category}</span>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => { setEditingId(item._id); setMenuForm({ name: item.name, description: item.description || '', price: item.price, category: item.category, isVeg: item.isVeg }); setShowAddMenu(true); }}
-                        className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center transition-colors" title="Edit">
-                        <Edit3 size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(item._id)} 
-                        className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center transition-colors" title="Delete">
-                        <Trash2 size={16} />
-                      </button>
+
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h4 className="font-black text-stone-900 text-xl leading-tight mb-2 group-hover:text-orange-600 transition-colors uppercase tracking-tight">{item.name}</h4>
+                    <p className="text-sm font-medium text-stone-500 mb-6 line-clamp-2 leading-relaxed">{item.description}</p>
+                    
+                    <div className="flex items-center justify-between pt-5 border-t border-stone-100 mt-auto">
+                      <span className="text-xs font-bold uppercase tracking-wider text-stone-400 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-100">{item.category}</span>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => { setEditingId(item._id); setMenuForm({ name: item.name, description: item.description || '', price: item.price, category: item.category, isVeg: item.isVeg }); setShowAddMenu(true); }}
+                          className="w-10 h-10 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-900 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Edit">
+                          <Edit3 size={18} />
+                        </button>
+                        <button onClick={() => handleDelete(item._id)} 
+                          className="w-10 h-10 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Delete">
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

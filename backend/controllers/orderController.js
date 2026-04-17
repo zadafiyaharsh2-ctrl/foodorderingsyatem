@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Restaurant = require('../models/Restaurant');
 const MenuItem = require('../models/MenuItem');
+const { emitToRestaurant, emitToUser } = require('../config/socket');
 
 exports.createOrder = async (req, res) => {
   try {
@@ -49,6 +50,10 @@ exports.createOrder = async (req, res) => {
     });
 
     await order.save();
+    
+    // Notify Restaurant
+    emitToRestaurant(restaurant._id, 'new_order', { orderId: order._id });
+
     res.status(201).json({ success: true, order });
   } catch (error) {
     console.error('Create order error:', error);
@@ -80,7 +85,6 @@ exports.getRestaurantOrders = async (req, res) => {
 
     const orders = await Order.find(query)
       .populate('user', 'name phone')
-      .populate('deliveryBoy', 'name phone')
       .sort({ createdAt: -1 });
 
     res.json({ success: true, orders });
@@ -102,15 +106,16 @@ exports.updateOrderStatus = async (req, res) => {
     if (req.user.role === 'restaurant' && (!restaurant || order.restaurant.toString() !== restaurant._id.toString())) {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
-    if (req.user.role === 'delivery' && order.deliveryBoy?.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: 'Not authorized' });
-    }
+
 
     order.status = status;
     if (status === 'delivered') {
       order.paymentStatus = 'paid';
     }
     await order.save();
+
+    // Notify User
+    emitToUser(order.user, 'status_updated', { orderId: order._id, status: order.status });
 
     res.json({ success: true, order });
   } catch (error) {
@@ -122,8 +127,7 @@ exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('restaurant', 'name image phone address')
-      .populate('user', 'name phone')
-      .populate('deliveryBoy', 'name phone');
+      .populate('user', 'name phone');
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -148,6 +152,13 @@ exports.cancelOrder = async (req, res) => {
 
     order.status = 'cancelled';
     await order.save();
+
+    // Notify Restaurant of cancellation
+    const restaurant = await Restaurant.findOne({ _id: order.restaurant });
+    if (restaurant) {
+      emitToRestaurant(restaurant._id, 'order_cancelled', { orderId: order._id });
+    }
+
     res.json({ success: true, order });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });

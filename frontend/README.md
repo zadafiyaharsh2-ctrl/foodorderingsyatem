@@ -4,60 +4,8 @@ A full-stack food ordering platform with separate dashboards for users, restaura
 
 ## Features
 
-### ✅ New Features Implemented
-#### 1. Restaurant Delivery Boy Management
-- Restaurants can now view a list of all available delivery boys
-- Added "Assign Delivery Boy" button for orders that are "Ready for Delivery"
-- Modal interface to select and assign delivery boys to specific orders
-
-#### 2. Updated Order Status Flow
-- Added new status: `assigned` (when delivery boy is assigned by restaurant)
-- Order flow: `placed` → `confirmed` → `preparing` → `ready` → `assigned` → `picked_up` → `on_the_way` → `delivered`
-
-#### 3. Delivery Boy Workflow Changes
-- Delivery boys no longer "accept" orders - they are assigned by restaurants
-- Delivery boys "confirm pickup" when they arrive at the restaurant
-- Updated dashboard text and buttons accordingly
-
-#### 4. Real-time Status Updates
-- Customers can see all status updates including "Delivery Assigned"
-- Delivery boy information is displayed on order details
-- Status colors and labels updated across all dashboards
-
-#### 5. Database & API Updates
-- Added 3 sample delivery boys to the seed data
-- New API endpoints:
-  - `GET /api/delivery/available-boys` - Get available delivery boys
-  - `POST /api/delivery/assign/:orderId` - Assign delivery boy to order
-  - `POST /api/delivery/pickup/:orderId` - Confirm order pickup
-
-#### 6. Frontend Updates
-- **Restaurant Dashboard**: New delivery assignment modal and workflow
-- **Delivery Dashboard**: Updated to show assigned orders and confirm pickup
-- **User Dashboard**: Real-time status updates with new status labels
-- **API Services**: Added new delivery management functions
-
-### 🚀 How It Works Now
-**Restaurant Process:**
-1. Mark order as "Ready for Delivery"
-2. Click "Assign Delivery Boy"
-3. Select from available delivery boys
-4. Order status becomes "Delivery Assigned"
-
-**Delivery Boy Process:**
-1. See assigned orders in their dashboard
-2. Click "Confirm Pickup" when arriving at restaurant
-3. Update status to "On the Way" and "Delivered" as they progress
-
-**Customer Experience:**
-1. See real-time updates: "Delivery Assigned" → "Order Picked Up" → "On the Way" → "Delivered"
-2. Know exactly when their order is with a delivery person
-
----
-
-
 ### User Interface
-The frontend is built with React (a modern JavaScript library for building user interfaces), providing a complete UI with pages for home, login, registration, restaurant listings, menus, cart, dashboards for users/restaurants/delivery, etc.
+The frontend is built with React (a modern JavaScript library for building user interfaces), providing a complete UI with pages for home, login, registration, restaurant listings, menus, cart, dashboards for users and restaurants, etc.
 
 ### REST API Backend
 Implemented with Express.js, providing a full REST API.
@@ -72,7 +20,6 @@ The system has 22+ API endpoints across multiple routes:
 - **Menu routes (4 endpoints)**: get menu by restaurant, add/update/delete menu items
 - **Order routes (6 endpoints)**: create order, get user/restaurant orders, get order by ID, update status, cancel order
 - **Restaurant routes (4 endpoints)**: get all restaurants, get my restaurant, get by ID, update restaurant
-- **Delivery routes (5 endpoints)**: get available orders, accept order, get my deliveries, update status, toggle availability
 
 ### CRUD Operations
 Fully implemented for all entities:
@@ -81,8 +28,6 @@ Fully implemented for all entities:
 - **Restaurants**: Create, Read, Update
 - **Menu Items**: Create, Read, Update, Delete
 - **Orders**: Create, Read, Update (status), Delete (cancel)
-- **Delivery assignments**: Create, Read, Update
-
 ### Error Handling
 Includes comprehensive error handling with:
 

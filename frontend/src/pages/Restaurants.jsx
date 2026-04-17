@@ -81,11 +81,21 @@ const Restaurants = () => {
             {filtered.map((restaurant, i) => (
               <Link to={`/restaurants/${restaurant._id}`} key={restaurant._id} className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-orange-900/5 border border-stone-100 transition-all duration-300 hover:-translate-y-1 animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
                 {/* Image Header */}
-                <div className="h-48 bg-orange-50 flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-transparent transition-colors z-10" />
-                  <span className="text-7xl group-hover:scale-110 transition-transform duration-500 drop-shadow-xl relative z-0">
-                    {cuisineEmojis[restaurant.cuisine?.[0]] || cuisineEmojis.default}
-                  </span>
+                <div className="h-52 bg-orange-50 relative overflow-hidden">
+                  {restaurant.image ? (
+                    <img 
+                      src={restaurant.image} 
+                      alt={restaurant.name} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-7xl group-hover:scale-110 transition-transform duration-500 drop-shadow-xl">
+                        {cuisineEmojis[restaurant.cuisine?.[0]] || cuisineEmojis.default}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   
                   {/* Status Badge */}
                   <div className="absolute top-4 right-4 z-20">

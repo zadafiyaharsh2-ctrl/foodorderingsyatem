@@ -26,7 +26,7 @@ const Navbar = ({ cartCount = 0 }) => {
     if (!user) return '/login';
     switch (user.role) {
       case 'restaurant': return '/restaurant/dashboard';
-      case 'delivery': return '/delivery/dashboard';
+
       default: return '/dashboard';
     }
   };

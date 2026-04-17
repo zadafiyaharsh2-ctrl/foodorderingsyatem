@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,7 +12,6 @@ import RestaurantDetail from './pages/RestaurantDetail';
 import Cart from './pages/Cart';
 import UserDashboard from './pages/UserDashboard';
 import RestaurantDashboard from './pages/RestaurantDashboard';
-import DeliveryDashboard from './pages/DeliveryDashboard';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -51,11 +51,7 @@ const AppContent = () => {
                 <RestaurantDashboard />
               </ProtectedRoute>
             } />
-            <Route path="/delivery/dashboard" element={
-              <ProtectedRoute allowedRoles={['delivery']}>
-                <DeliveryDashboard />
-              </ProtectedRoute>
-            } />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
@@ -68,7 +64,9 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <SocketProvider>
+        <AppContent />
+      </SocketProvider>
     </AuthProvider>
   );
 }

@@ -123,7 +123,7 @@ const Cart = ({ cart, setCart }) => {
                       }
                       <div>
                         <h4 className="font-bold text-stone-900 text-lg">{item.name}</h4>
-                        <div className="text-orange-600 font-bold mt-1">₹{item.price * item.quantity}</div>
+                        <div className="text-orange-600 font-bold mt-1">₹{(item.price * item.quantity).toFixed(2)}</div>
                       </div>
                     </div>
 
@@ -196,15 +196,15 @@ const Cart = ({ cart, setCart }) => {
               <div className="space-y-4 mb-6 text-stone-600 font-medium">
                 <div className="flex justify-between items-center bg-stone-50 p-3 rounded-xl">
                   <span>Subtotal</span>
-                  <span className="text-stone-900 font-bold">₹{subtotal}</span>
+                  <span className="text-stone-900 font-bold">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center bg-stone-50 p-3 rounded-xl">
                   <span>Delivery Fee</span>
-                  <span className="text-stone-900 font-bold">₹{deliveryFee}</span>
+                  <span className="text-stone-900 font-bold">₹{deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center bg-stone-50 p-3 rounded-xl">
                   <span>Tax & Charges</span>
-                  <span className="text-stone-900 font-bold">₹{tax}</span>
+                  <span className="text-stone-900 font-bold">₹{tax.toFixed(2)}</span>
                 </div>
               </div>
 
