@@ -87,3 +87,12 @@ exports.getMenuByRestaurant = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+exports.getAllMenuItems = async (req, res) => {
+  try {
+    const items = await MenuItem.find({ isAvailable: true }).populate('restaurant', 'name isOpen rating');
+    res.json({ success: true, menuItems: items });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

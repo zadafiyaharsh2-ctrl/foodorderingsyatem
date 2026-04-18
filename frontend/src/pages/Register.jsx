@@ -31,9 +31,10 @@ const Register = () => {
       const data = { ...formData, role };
       if (role !== 'restaurant') delete data.restaurantName;
       
-      const success = await register(data);
-      if (success) {
-        navigate(role === 'restaurant' ? '/restaurant/dashboard' : '/dashboard');
+      const response = await register(data);
+      if (response && response.success) {
+        localStorage.setItem('unverified_email', response.email || formData.email);
+        navigate('/verify-email', { state: { email: response.email || formData.email } });
       } else {
         setError('Registration failed');
       }

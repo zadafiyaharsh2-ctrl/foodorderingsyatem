@@ -37,7 +37,7 @@ const Cart = ({ cart, setCart }) => {
   };
 
   const subtotal = cart.items?.reduce((s, i) => s + i.price * i.quantity, 0) || 0;
-  const deliveryFee = subtotal > 0 ? (cart.deliveryFee || 0) : 0;
+  const deliveryFee = subtotal > 0 ? 30 : 0;
   const tax = Math.round(subtotal * 0.05 * 100) / 100;
   const total = subtotal + deliveryFee + tax;
 
@@ -170,7 +170,7 @@ const Cart = ({ cart, setCart }) => {
               <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100">
                 <h3 className="text-xl font-bold text-stone-900 mb-6 flex items-center gap-3"><CreditCard size={22} className="text-orange-500" /> Payment</h3>
                 <div className="space-y-3">
-                  {[{ id: 'cod', label: 'Cash on Delivery', icon: '💵' }, { id: 'online', label: 'Online Payment', icon: '💳' }].map(pm => (
+                  {[{ id: 'cod', label: 'Cash on Delivery', icon: '💵' }].map(pm => (
                     <button key={pm.id} onClick={() => setPaymentMethod(pm.id)}
                       className={`w-full p-4 rounded-xl font-bold flex items-center gap-3 border-2 transition-all ${
                         paymentMethod === pm.id ? 'border-orange-500 bg-orange-50/50 text-orange-700' : 'border-stone-100 bg-white text-stone-600 hover:border-stone-200 hover:bg-stone-50'

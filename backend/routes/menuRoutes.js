@@ -5,6 +5,7 @@ const { auth, requireRole } = require('../middleware/auth');
 
 const upload = require('../middleware/upload');
 
+router.get('/all', menuController.getAllMenuItems);
 router.get('/restaurant/:restaurantId', menuController.getMenuByRestaurant);
 router.post('/', auth, requireRole('restaurant'), upload.single('image'), menuController.addMenuItem);
 router.put('/:id', auth, requireRole('restaurant'), upload.single('image'), menuController.updateMenuItem);

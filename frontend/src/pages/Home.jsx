@@ -33,18 +33,9 @@ const Home = () => {
                 Hot, fresh, and unbelievably fast. Your favorite local meals are just a tap away.
               </p>
 
-              {/* Massive Search CTA */}
-              <div className="relative w-full max-w-lg bg-white rounded-[2rem] p-3 shadow-[0_20px_40px_rgba(255,100,0,0.1)] flex flex-col sm:flex-row items-center mb-12 gap-3 sm:gap-0 border-2 border-stone-100 group hover:border-orange-200 hover:shadow-[0_30px_60px_rgba(255,100,0,0.15)] transition-all duration-300">
-                <div className="w-full flex-1 flex items-center pl-4 pr-2 py-3 sm:py-0">
-                  <MapPin className="text-orange-500 mr-3 shrink-0" size={28} />
-                  <input 
-                    type="text" 
-                    placeholder="Enter your street address..." 
-                    className="w-full text-stone-900 placeholder-stone-400 focus:outline-none text-xl font-bold bg-transparent"
-                    readOnly
-                  />
-                </div>
-                <Link to="/restaurants" className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 rounded-2xl font-black transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 shrink-0 group/btn transform hover:scale-[1.02] active:scale-95 text-lg">
+              {/* Explore CTA */}
+              <div className="mb-12">
+                <Link to="/login" className="inline-flex bg-orange-500 hover:bg-orange-600 text-white px-12 py-5 rounded-2xl font-black transition-all shadow-lg shadow-orange-500/30 items-center justify-center gap-2 group/btn transform hover:scale-[1.02] active:scale-95 text-lg">
                   EXPLORE <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -124,14 +115,12 @@ const Home = () => {
                 Satisfy Any <span className="text-orange-600 underline decoration-8 underline-offset-8">Craving.</span>
               </h2>
             </div>
-            <Link to="/restaurants" className="hidden md:flex items-center gap-2 text-stone-900 font-black hover:text-orange-600 transition-colors uppercase tracking-wider text-sm bg-white px-8 py-5 rounded-2xl shadow-sm border border-stone-200">
-              View All Categories <ChevronRight size={18} />
-            </Link>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Category 1 - Hot Orange */}
-            <div className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-orange-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-orange-500">
+            <Link to="/restaurants" className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-orange-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-orange-500 block">
               <div className="w-56 h-56 mx-auto mb-8 bg-white rounded-full p-2 shadow-2xl transform group-hover:-translate-y-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 ease-out z-10 relative">
                 <img src="/images/pizza.png" alt="Pizza" className="w-full h-full object-cover rounded-full mix-blend-multiply" />
               </div>
@@ -142,10 +131,10 @@ const Home = () => {
                   <ArrowRight size={28} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Category 2 - Bright Green */}
-            <div className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-green-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-green-500 mt-0 md:mt-10">
+            <Link to="/restaurants" className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-green-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-green-500 mt-0 md:mt-10 block">
               <div className="w-56 h-56 mx-auto mb-8 bg-white rounded-full p-2 shadow-2xl transform group-hover:-translate-y-8 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 ease-out z-10 relative">
                 <img src="/images/burger.png" alt="Burger" className="w-full h-full object-cover rounded-full mix-blend-multiply" />
               </div>
@@ -156,10 +145,10 @@ const Home = () => {
                   <ArrowRight size={28} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Category 3 - Cherry Red */}
-            <div className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-red-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-red-500 mt-0 md:mt-20">
+            <Link to="/restaurants" className="group relative rounded-[2.5rem] p-10 cursor-pointer overflow-hidden isolate shadow-xl shadow-red-500/20 transform hover:-translate-y-2 transition-all duration-300 bg-red-500 mt-0 md:mt-20 block">
               <div className="w-56 h-56 mx-auto mb-8 bg-white rounded-full p-2 shadow-2xl transform group-hover:-translate-y-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 ease-out z-10 relative">
                 <img src="/images/ramen.png" alt="Ramen" className="w-full h-full object-cover rounded-full mix-blend-multiply" />
               </div>
@@ -170,12 +159,10 @@ const Home = () => {
                   <ArrowRight size={28} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
           
-          <Link to="/restaurants" className="md:hidden mt-8 flex items-center justify-center gap-2 text-stone-900 font-black hover:text-orange-600 transition-colors uppercase tracking-wider text-sm bg-white px-6 py-5 rounded-2xl shadow-sm border border-stone-200 w-full">
-            View All Categories <ChevronRight size={18} />
-          </Link>
+
         </div>
       </section>
 
@@ -203,9 +190,7 @@ const Home = () => {
                   <Link to="/register" className="bg-orange-500 hover:bg-orange-400 text-white px-8 py-5 rounded-2xl font-black transition-all shadow-xl shadow-orange-500/30 flex items-center justify-center gap-3 text-lg hover:-translate-y-1">
                     Become a Partner <ArrowRight size={20} />
                   </Link>
-                  <button className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-8 py-5 rounded-2xl font-bold transition-all border border-white/20 flex items-center justify-center gap-3 text-lg">
-                    <Play fill="currentColor" size={16} /> Watch Story
-                  </button>
+
                 </div>
               </div>
               

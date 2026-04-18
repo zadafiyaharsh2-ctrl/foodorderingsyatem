@@ -24,7 +24,12 @@ const Login = () => {
         setError('Invalid credentials');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to login');
+      if (err.response?.data?.notVerified) {
+        localStorage.setItem('unverified_email', err.response.data.email || formData.email);
+        navigate('/verify-email', { state: { email: err.response.data.email || formData.email } });
+      } else {
+        setError(err.response?.data?.message || 'Failed to login');
+      }
     } finally {
       setLoading(false);
     }
@@ -99,7 +104,12 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-stone-700 mb-2">Password</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-bold text-stone-700">Password</label>
+                <Link to="/forgot-password" className="text-sm font-semibold text-orange-600 hover:text-orange-500">
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400">
                   <Lock size={18} />
@@ -119,9 +129,6 @@ const Login = () => {
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
-              </div>
-              <div className="flex justify-end mt-2">
-                <a href="#" className="text-sm font-semibold text-orange-600 hover:text-orange-500">Forgot password?</a>
               </div>
             </div>
 

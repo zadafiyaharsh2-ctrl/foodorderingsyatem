@@ -25,6 +25,7 @@ export const getMyRestaurant = () => API.get('/restaurants/my');
 export const updateRestaurant = (data) => API.put('/restaurants/update', data);
 
 // Menu
+export const getAllMenuItems = () => API.get('/menu/all');
 export const getMenuByRestaurant = (restaurantId) => API.get(`/menu/restaurant/${restaurantId}`);
 export const addMenuItem = (data) => API.post('/menu', data);
 export const updateMenuItem = (id, data) => API.put(`/menu/${id}`, data);

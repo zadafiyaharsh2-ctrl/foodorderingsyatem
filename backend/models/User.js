@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema({
   // Restaurant specific
   restaurantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
   isVerified: { type: Boolean, default: false },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  verifyEmailOtp: String,
+  verifyEmailOtpExpire: Date
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

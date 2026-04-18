@@ -31,7 +31,7 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const deliveryFee = restaurant.deliveryFee || 0;
+    const deliveryFee = 30;
     const tax = Math.round(totalAmount * 0.05 * 100) / 100; // 5% tax
     const grandTotal = totalAmount + deliveryFee + tax;
 

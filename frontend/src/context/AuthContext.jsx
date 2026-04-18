@@ -34,12 +34,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const { data } = await registerUser(userData);
-      if (data.success) {
-        localStorage.setItem('fo_token', data.token);
-        setUser(data.user);
-        return true;
-      }
-      return false;
+      return data;
     } catch (error) {
       throw error;
     }
